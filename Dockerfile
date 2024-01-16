@@ -14,10 +14,9 @@ RUN go env -w GO111MODULE=on
 RUN go env -w GOPROXY=https://goproxy.cn,direct
 RUN go env -w CGO_ENABLED=0
 RUN go env
-RUN go mod tidy
 
 # 下载依赖
-RUN go mod download
+RUN go mod tidy
 
 # 复制服务端代码到工作目录
 COPY main.go .
