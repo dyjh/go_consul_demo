@@ -1,8 +1,15 @@
-# 使用 golang 官方的 alpine 镜像作为基础镜像
+# 使用 golang:1.20.12 版本的 alpine 镜像作为基础镜像
 FROM golang:1.20.12-alpine as builder
 
 # 设置工作目录
 WORKDIR /app
+
+# 复制 go.mod 和 go.sum 到工作目录
+COPY go.mod .
+COPY go.sum .
+
+# 下载依赖
+RUN go mod download
 
 # 复制服务端代码到工作目录
 COPY main.go .
