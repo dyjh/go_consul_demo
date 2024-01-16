@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/hashicorp/consul/api"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
-
-	consul "github.com/hashicorp/consul/api"
 )
 
 type HelloService struct{}
@@ -46,37 +45,43 @@ func getServerIP() (string, error) {
 	return "", fmt.Errorf("Unable to determine server IP address")
 }
 
-func registerServiceWithConsul() error {
-	config := consul.DefaultConfig()
-	client, err := consul.NewClient(config)
+func registerWithConsul() error {
+	config := api.DefaultConfig()
+	client, err := api.NewClient(config)
 	if err != nil {
 		return err
 	}
 
-	registration := new(consul.AgentServiceRegistration)
-	registration.ID = "hello-service"
-	registration.Name = "hello-service"
-	registration.Port = 1234
+	agent := client.Agent()
 
 	ip, err := getServerIP()
 	if err != nil {
 		return err
 	}
 
-	registration.Address = ip
+	port := 1234 // 修改为你的实际端口
 
-	err = client.Agent().ServiceRegister(registration)
+	service := &api.AgentServiceRegistration{
+		ID:      "jsonrpc-service",
+		Name:    "jsonrpc",
+		Address: ip,
+		Port:    port,
+	}
+
+	err = agent.ServiceRegister(service)
 	if err != nil {
 		return err
 	}
 
+	fmt.Printf("Service registered with Consul: %s:%d\n", ip, port)
 	return nil
 }
 
 func main() {
-	err := registerServiceWithConsul()
+	// 注册服务到Consul
+	err := registerWithConsul()
 	if err != nil {
-		fmt.Println("Error registering service with Consul:", err)
+		fmt.Println("Error registering with Consul:", err)
 		return
 	}
 
