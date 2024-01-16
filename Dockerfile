@@ -5,7 +5,7 @@ FROM golang:1.20.12-alpine as builder
 WORKDIR /app
 
 # 复制服务端代码到工作目录
-COPY server.go .
+COPY main.go .
 
 # 构建服务端应用
 RUN go build -o server .
