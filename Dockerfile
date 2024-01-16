@@ -1,12 +1,7 @@
 # 使用 golang:1.20.12 版本的 alpine 镜像作为基础镜像
 FROM golang:1.20.12-alpine as builder
 
-RUN go env -w GO111MODULE=on \
-    && go env -w GOPROXY=https://goproxy.cn,direct \
-    && go env -w CGO_ENABLED=0 \
-    && go env \
-    && go mod tidy \
-    && go build -o server .
+
 
 
 # 设置工作目录
@@ -15,6 +10,11 @@ WORKDIR /app
 # 复制整个项目目录到工作目录
 COPY . .
 
+RUN go env -w GO111MODULE=on
+RUN go env -w GOPROXY=https://goproxy.cn,direct
+RUN go env -w CGO_ENABLED=0
+RUN go env
+RUN go mod tidy
 # 下载依赖
 RUN go mod download
 
