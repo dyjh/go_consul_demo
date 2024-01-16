@@ -15,6 +15,7 @@ RUN go env -w GOPROXY=https://goproxy.cn,direct
 RUN go env -w CGO_ENABLED=0
 RUN go env
 RUN go mod tidy
+
 # 下载依赖
 RUN go mod download
 

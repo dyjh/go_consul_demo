@@ -5,7 +5,7 @@ import (
 	"net/rpc/jsonrpc"
 )
 
-func main() {
+func client() {
 	client, err := jsonrpc.Dial("tcp", "127.0.0.1:1234")
 	if err != nil {
 		fmt.Println("Error connecting to server:", err)
