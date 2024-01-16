@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/hashicorp/consul/api"
+	consul "github.com/hashicorp/consul/api"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
@@ -45,43 +45,44 @@ func getServerIP() (string, error) {
 	return "", fmt.Errorf("Unable to determine server IP address")
 }
 
-func registerWithConsul() error {
-	config := api.DefaultConfig()
-	client, err := api.NewClient(config)
+func registerServiceWithConsul(consulAddr string) error {
+	config := consul.DefaultConfig()
+	config.Address = consulAddr // 设置 Consul 服务的地址
+	client, err := consul.NewClient(config)
 	if err != nil {
 		return err
 	}
 
-	agent := client.Agent()
+	registration := new(consul.AgentServiceRegistration)
+	registration.ID = "hello-service"
+	registration.Name = "hello-service"
+	registration.Port = 1234
 
+	// 获取服务器IP地址
 	ip, err := getServerIP()
 	if err != nil {
 		return err
 	}
 
-	port := 1234 // 修改为你的实际端口
+	registration.Address = ip
 
-	service := &api.AgentServiceRegistration{
-		ID:      "jsonrpc-service",
-		Name:    "jsonrpc",
-		Address: ip,
-		Port:    port,
-	}
-
-	err = agent.ServiceRegister(service)
+	err = client.Agent().ServiceRegister(registration)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Service registered with Consul: %s:%d\n", ip, port)
 	return nil
 }
 
 func main() {
-	// 注册服务到Consul
-	err := registerWithConsul()
+	ip, errIp := getServerIP()
+	if errIp != nil {
+		return
+	}
+	consulAddr := fmt.Sprintf("%s:8500", ip) // 替换为实际的 Consul 地址
+	err := registerServiceWithConsul(consulAddr)
 	if err != nil {
-		fmt.Println("Error registering with Consul:", err)
+		fmt.Println("Error registering service with Consul:", err)
 		return
 	}
 
