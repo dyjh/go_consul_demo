@@ -2,10 +2,11 @@ module github.com/dyjh/go_consul_demo
 
 go 1.20
 
+require github.com/hashicorp/consul/api v1.26.1
+
 require (
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/fatih/color v1.16.0 // indirect
-	github.com/hashicorp/consul/api v1.26.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.6.2 // indirect
